@@ -1,10 +1,10 @@
 resource "aws_vpc" "main" {
-  cidr_block           = local.vpc_cidr
+  cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
-    Name = "${local.name_prefix}-vpc"
+    Name = "${var.name_prefix}-vpc"
   }
 }
 
@@ -12,14 +12,14 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${local.name_prefix}-igw"
+    Name = "${var.name_prefix}-igw"
   }
 }
 
 # --- Public subnets (NAT gateways, ALB) ---
 
 resource "aws_subnet" "public" {
-  for_each = local.public_subnet_cidrs
+  for_each = var.public_subnet_cidrs
 
   vpc_id                  = aws_vpc.main.id
   availability_zone       = each.key
@@ -27,41 +27,41 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                                          = "${local.name_prefix}-public-${each.key}"
-    Tier                                          = "public"
-    "kubernetes.io/role/elb"                      = "1"
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    Name                                        = "${var.name_prefix}-public-${each.key}"
+    Tier                                        = "public"
+    "kubernetes.io/role/elb"                    = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
 # --- Private subnets (EKS worker nodes) ---
 
 resource "aws_subnet" "private" {
-  for_each = local.private_subnet_cidrs
+  for_each = var.private_subnet_cidrs
 
   vpc_id            = aws_vpc.main.id
   availability_zone = each.key
   cidr_block        = each.value
 
   tags = {
-    Name                                          = "${local.name_prefix}-private-${each.key}"
-    Tier                                          = "private"
-    "kubernetes.io/role/internal-elb"             = "1"
-    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    Name                                        = "${var.name_prefix}-private-${each.key}"
+    Tier                                        = "private"
+    "kubernetes.io/role/internal-elb"           = "1"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
   }
 }
 
 # --- Database subnets (RDS, fully isolated) ---
 
 resource "aws_subnet" "database" {
-  for_each = local.database_subnet_cidrs
+  for_each = var.database_subnet_cidrs
 
   vpc_id            = aws_vpc.main.id
   availability_zone = each.key
   cidr_block        = each.value
 
   tags = {
-    Name = "${local.name_prefix}-database-${each.key}"
+    Name = "${var.name_prefix}-database-${each.key}"
     Tier = "database"
   }
 }
@@ -69,25 +69,25 @@ resource "aws_subnet" "database" {
 # --- NAT gateways (one per AZ for HA) ---
 
 resource "aws_eip" "nat" {
-  for_each = toset(local.azs)
+  for_each = toset(var.azs)
 
   domain = "vpc"
 
   tags = {
-    Name = "${local.name_prefix}-nat-eip-${each.key}"
+    Name = "${var.name_prefix}-nat-eip-${each.key}"
   }
 
   depends_on = [aws_internet_gateway.main]
 }
 
 resource "aws_nat_gateway" "main" {
-  for_each = toset(local.azs)
+  for_each = toset(var.azs)
 
   allocation_id = aws_eip.nat[each.key].id
   subnet_id     = aws_subnet.public[each.key].id
 
   tags = {
-    Name = "${local.name_prefix}-nat-${each.key}"
+    Name = "${var.name_prefix}-nat-${each.key}"
   }
 
   depends_on = [aws_internet_gateway.main]
@@ -104,7 +104,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "${local.name_prefix}-public-rt"
+    Name = "${var.name_prefix}-public-rt"
   }
 }
 
@@ -118,7 +118,7 @@ resource "aws_route_table_association" "public" {
 # --- Route tables: private (per-AZ, routes via that AZ's NAT) ---
 
 resource "aws_route_table" "private" {
-  for_each = toset(local.azs)
+  for_each = toset(var.azs)
 
   vpc_id = aws_vpc.main.id
 
@@ -128,7 +128,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "${local.name_prefix}-private-rt-${each.key}"
+    Name = "${var.name_prefix}-private-rt-${each.key}"
   }
 }
 
@@ -145,7 +145,7 @@ resource "aws_route_table" "database" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "${local.name_prefix}-database-rt"
+    Name = "${var.name_prefix}-database-rt"
   }
 }
 
