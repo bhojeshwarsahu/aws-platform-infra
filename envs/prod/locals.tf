@@ -1,6 +1,7 @@
 locals {
-  name_prefix  = "${var.project_name}-${var.environment}"
-  cluster_name = "${local.name_prefix}-eks"
+  name_prefix        = "${var.project_name}-${var.environment}"
+  cluster_name       = "${local.name_prefix}-eks"
+  kubernetes_version = "1.36"
 
   common_tags = {
     Project     = var.project_name
