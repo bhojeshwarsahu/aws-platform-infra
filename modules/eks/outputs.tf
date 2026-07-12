@@ -49,3 +49,7 @@ output "node_group_arn" {
 output "node_group_status" {
   value = aws_eks_node_group.main.status
 }
+
+output "ebs_csi_driver_role_arn" {
+  value = aws_iam_role.ebs_csi_driver.arn
+}
