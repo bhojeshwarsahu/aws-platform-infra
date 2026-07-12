@@ -23,6 +23,12 @@ resource "aws_eks_access_policy_association" "admin" {
 # not just AWS APIs. The CI apply role doesn't need this: it already has
 # implicit cluster-admin as the cluster's original creator via
 # bootstrap_cluster_creator_admin_permissions.
+#
+# Uses AmazonEKSAdminViewPolicy rather than AmazonEKSViewPolicy: the
+# latter only covers standard namespaced resources, not cluster-scoped
+# ones like StorageClass/PersistentVolume/Node -- which Terraform still
+# needs read access to when refreshing kubernetes_* resources of that
+# kind. Still read-only, just a wider read scope.
 resource "aws_eks_access_entry" "viewer" {
   for_each = toset(var.viewer_principal_arns)
 
@@ -35,7 +41,7 @@ resource "aws_eks_access_policy_association" "viewer" {
 
   cluster_name  = aws_eks_cluster.main.name
   principal_arn = each.value
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminViewPolicy"
 
   access_scope {
     type = "cluster"
