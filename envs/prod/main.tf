@@ -17,11 +17,12 @@ module "eks" {
   name_prefix  = local.name_prefix
   cluster_name = local.cluster_name
 
-  kubernetes_version   = local.kubernetes_version
-  public_subnet_ids    = values(module.network.public_subnet_ids)
-  private_subnet_ids   = values(module.network.private_subnet_ids)
-  public_access_cidrs  = var.eks_public_access_cidrs
-  admin_principal_arns = var.eks_admin_principal_arns
+  kubernetes_version    = local.kubernetes_version
+  public_subnet_ids     = values(module.network.public_subnet_ids)
+  private_subnet_ids    = values(module.network.private_subnet_ids)
+  public_access_cidrs   = var.eks_public_access_cidrs
+  admin_principal_arns  = var.eks_admin_principal_arns
+  viewer_principal_arns = var.eks_viewer_principal_arns
 
   node_instance_types = local.node_instance_types
   node_capacity_type  = local.node_capacity_type
