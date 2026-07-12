@@ -22,3 +22,9 @@ variable "eks_admin_principal_arns" {
   description = "IAM principal ARNs granted EKS cluster-admin access via access entries"
   type        = list(string)
 }
+
+variable "eks_viewer_principal_arns" {
+  description = "IAM principal ARNs granted read-only EKS access via access entries"
+  type        = list(string)
+  default     = []
+}

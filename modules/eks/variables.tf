@@ -33,6 +33,12 @@ variable "admin_principal_arns" {
   type        = list(string)
 }
 
+variable "viewer_principal_arns" {
+  description = "IAM principal ARNs granted read-only EKS access via access entries (e.g. CI's plan role, which needs to refresh kubernetes_* resource state)"
+  type        = list(string)
+  default     = []
+}
+
 variable "node_instance_types" {
   description = "EC2 instance types for the EKS managed node group"
   type        = list(string)

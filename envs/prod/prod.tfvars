@@ -11,3 +11,9 @@ environment  = "prod"
 eks_public_access_cidrs = ["0.0.0.0/0"]
 
 eks_admin_principal_arns = ["arn:aws:iam::627807502978:user/sahu"]
+
+# CI's plan role needs read-only Kubernetes API access to refresh state for
+# kubernetes_*/helm_* resources during `terraform plan` -- it doesn't have
+# the apply role's implicit cluster-admin (that comes from being the
+# cluster's original creator), and shouldn't have write access anyway.
+eks_viewer_principal_arns = ["arn:aws:iam::627807502978:role/skilli-prod-github-infra-plan-role"]
