@@ -6,5 +6,8 @@ terraform {
     tls = {
       source = "hashicorp/tls"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+    }
   }
 }
