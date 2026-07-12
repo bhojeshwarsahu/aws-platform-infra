@@ -9,6 +9,12 @@ locals {
   node_max_size       = 4
   node_desired_size   = 2
 
+  rds_engine_version    = "18.4"
+  rds_instance_class    = "db.t4g.medium"
+  rds_allocated_storage = 50
+  rds_db_name           = "skilli"
+  rds_master_username   = "skilliadmin"
+
   common_tags = {
     Project     = var.project_name
     Environment = var.environment

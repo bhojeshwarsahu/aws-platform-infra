@@ -29,3 +29,19 @@ module "eks" {
   node_max_size       = local.node_max_size
   node_desired_size   = local.node_desired_size
 }
+
+module "rds" {
+  source = "../../modules/rds"
+
+  name_prefix = local.name_prefix
+
+  vpc_id                    = module.network.vpc_id
+  database_subnet_ids       = values(module.network.database_subnet_ids)
+  allowed_security_group_id = module.eks.cluster_security_group_id
+
+  engine_version    = local.rds_engine_version
+  instance_class    = local.rds_instance_class
+  allocated_storage = local.rds_allocated_storage
+  db_name           = local.rds_db_name
+  master_username   = local.rds_master_username
+}
