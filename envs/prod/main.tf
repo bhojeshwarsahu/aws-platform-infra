@@ -22,4 +22,10 @@ module "eks" {
   private_subnet_ids   = values(module.network.private_subnet_ids)
   public_access_cidrs  = var.eks_public_access_cidrs
   admin_principal_arns = var.eks_admin_principal_arns
+
+  node_instance_types = local.node_instance_types
+  node_capacity_type  = local.node_capacity_type
+  node_min_size       = local.node_min_size
+  node_max_size       = local.node_max_size
+  node_desired_size   = local.node_desired_size
 }

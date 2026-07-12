@@ -32,3 +32,34 @@ variable "admin_principal_arns" {
   description = "IAM principal ARNs granted EKS cluster-admin access via access entries"
   type        = list(string)
 }
+
+variable "node_instance_types" {
+  description = "EC2 instance types for the EKS managed node group"
+  type        = list(string)
+}
+
+variable "node_capacity_type" {
+  description = "Capacity type for the node group (ON_DEMAND or SPOT)"
+  type        = string
+}
+
+variable "node_min_size" {
+  description = "Minimum node count"
+  type        = number
+}
+
+variable "node_max_size" {
+  description = "Maximum node count"
+  type        = number
+}
+
+variable "node_desired_size" {
+  description = "Desired node count"
+  type        = number
+}
+
+variable "node_disk_size" {
+  description = "Root EBS volume size (GiB) for worker nodes"
+  type        = number
+  default     = 50
+}
