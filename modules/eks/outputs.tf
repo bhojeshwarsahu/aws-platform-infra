@@ -57,3 +57,15 @@ output "ebs_csi_driver_role_arn" {
 output "lb_controller_role_arn" {
   value = aws_iam_role.lb_controller.arn
 }
+
+output "karpenter_controller_role_arn" {
+  value = aws_iam_role.karpenter_controller.arn
+}
+
+output "karpenter_node_instance_profile_name" {
+  value = aws_iam_instance_profile.karpenter_node.name
+}
+
+output "karpenter_interruption_queue_name" {
+  value = aws_sqs_queue.karpenter_interruption.name
+}
