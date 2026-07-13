@@ -60,3 +60,9 @@ variable "deletion_protection" {
   type        = bool
   default     = true
 }
+
+variable "secret_rotation_days" {
+  description = "Days between automatic rotations of the RDS-managed master user secret"
+  type        = number
+  default     = 30
+}

@@ -80,3 +80,15 @@ resource "aws_db_instance" "main" {
     Name = "${var.name_prefix}-db"
   }
 }
+
+# rotation_lambda_arn is intentionally omitted -- required only for
+# self-managed secrets. This is an RDS-managed master user secret
+# (manage_master_user_password above), so AWS supplies its own rotation
+# function automatically.
+resource "aws_secretsmanager_secret_rotation" "rds_master" {
+  secret_id = aws_db_instance.main.master_user_secret[0].secret_arn
+
+  rotation_rules {
+    automatically_after_days = var.secret_rotation_days
+  }
+}
